@@ -1,0 +1,60 @@
+version: '3.4'
+services:
+  mongossh:
+    container_name: mongossh
+    build: .
+    image: fordodone/mongossh
+    volumes:
+      - $HOME/.ssh/id_rsa:/root/.ssh/id_rsa:ro
+      - $PWD/mongorc.js:/etc/mongorc.js:ro
+    working_dir: /mongossh
+    cap_add:
+      - NET_ADMIN
+    extra_hosts:
+      - 'mycluster0-shard-00-00-example.mongodb.net:172.31.0.2'
+      - 'mycluster0-shard-00-01-example.mongodb.net:172.31.1.2'
+      - 'mycluster0-shard-00-02-example.mongodb.net:172.31.2.2'
+    networks:
+      mongosshnet0:
+        ipv4_address: 172.31.0.2
+      mongosshnet1:
+        ipv4_address: 172.31.1.2
+      mongosshnet2:
+        ipv4_address: 172.31.2.2
+    command:
+      - ssh
+      - -vv
+      - -N
+      - -o
+      - StrictHostKeyChecking=no
+      - -L
+      - 172.31.0.2:27017:mycluster0-shard-00-00-example.mongodb.net:27017
+      - -L
+      - 172.31.1.2:27017:mycluster0-shard-00-01-example.mongodb.net:27017
+      - -L
+      - 172.31.2.2:27017:mycluster0-shard-00-02-example.mongodb.net:27017
+      - -i
+      - /root/.ssh/id_rsa
+      - sshusername@mysshbouncbox.fordodone.com
+
+networks:
+  mongosshnet0:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.31.0.0/30
+
+  mongosshnet1:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.31.1.0/30
+
+  mongosshnet2:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.31.2.0/30

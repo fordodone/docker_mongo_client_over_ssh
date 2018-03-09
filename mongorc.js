@@ -1,0 +1,1 @@
+connect('mongodb://myUserName:superSecretPassword1@mycluster0-shard-00-00-example.mongodb.net:27017,mycluster0-shard-00-01-example.mongodb.net:27017,mycluster0-shard-00-02-example.mongodb.net:27017/myAwesomeDB?ssl=true&replicaSet=mycluster0-shard-0&authSource=admin')
